@@ -1,0 +1,39 @@
+version: "3"
+
+services:
+  backend:
+    image: tennant-middleware_backend
+    container_name: tennant-middleware_backend
+    build:
+      context: ./tennant-middleware/backend
+      dockerfile: ./Dockerfile
+    ports:
+      - 5000:8000
+    env_file:
+      - tennant-middleware/backend/.env
+    volumes:
+      - ./tennant-middleware/backend/src:/tennant-middleware/src
+      - ./tennant-middleware/backend/tests:/tennant-middleware/tests
+      - ./tennant-middleware/uvicorn/config.json:/tennant-middleware/uvicorn/config.json:ro
+    depends_on:
+      - pg
+    command: [
+      "uvicorn", "--factory", "src.main:create_app",
+      "--host", "0.0.0.0",
+      "--port", "8000",
+      "--reload",
+      "--log-config", "uvicorn/config.json"
+    ]
+
+  pg:
+    image: postgres:15.1
+    container_name: tennant-middleware_pg
+    env_file:
+      - ./tennant-middleware/pg/.env
+    ports:
+      - 5432:5432
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+volumes:
+  pg-data:
