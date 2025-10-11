@@ -30,7 +30,7 @@ This is controlled by the build argument `POETRY_INSTALL_DEV`, which defaults to
 For production, you can either set it to `false` directly in the Dockerfile or override it at build time:
 
 ```
-docker-compose build --build-arg "POETRY_INSTALL_DEV=true"
+docker-compose build --build-arg "POETRY_INSTALL_DEV=false"
 docker-compose up
 ```
 
