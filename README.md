@@ -24,7 +24,10 @@ cp tennant-middleware/pg/{example.env,.env}
 docker-compose up
 ```
 
-It's possible to install `dev` dependencies via `--build-arg POETRY_INSTALL_DEV=true`
+By default `dev` dependencies are isntalled during the build
+This is controlled by the build argument `POETRY_INSTALL_DEV`, which defaults to `true` in the Dockerfile (`tennant-middleware/backend/Dockerfile`)
+
+For production, you can either set it to `false` directly in the Dockerfile or override it at build time:
 
 ```
 docker-compose build --build-arg "POETRY_INSTALL_DEV=true"
@@ -35,7 +38,6 @@ Run a command inside the docker container:
 
 ```bash
 docker-compose run --rm backend [command]
-docker-compose run --rm backend alembic upgrade head
 ```
 
 
@@ -49,19 +51,6 @@ Documentation available on
 
 Testing
 -------
-
-Create database for your test suite
-
-```
-docker-compose run pg psql -U tennant-middleware -h tennant-middleware_pg tennant-middleware -c 'create database tennant-middleware_test'
-```
-
-Update `.env` to use correct `TEST_PG_DSN` if needed
-
-```
-docker-compose run --rm backend pytest
-```
-
 To run Ruff as a linter
 
 ```
