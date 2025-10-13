@@ -1,11 +1,10 @@
-version: "3"
-
 services:
   backend:
-    image: tennant-middleware_backend
-    container_name: tennant-middleware_backend
     build:
       context: ./tennant-middleware/backend
+      target: dev
+    container_name: tennant-middleware-dev
+    image: tennant-middleware-dev
     ports:
       - 5000:8000
     env_file:

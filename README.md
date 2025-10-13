@@ -1,7 +1,7 @@
 tennant middleware
 =============================
 
-Middleware connecting front-end with SAP for file maagement (search, download)
+Middleware connecting front-end with SAP for file management (search, download)
 
 
 Development Requirements
@@ -15,23 +15,29 @@ Development Requirements
 Installation
 ------------
 
+1. Copy environment files
+
 ```bash
 cp tennant-middleware/backend/{example.env,.env}
 cp tennant-middleware/pg/{example.env,.env}
 ```
 
+2. Development
+
+Use docker compose (installs dev dependencies)
+
 ```bash
 docker-compose up
 ```
+- The provided docker-compose.yml is intended only for development.
+- It builds the dev stage of the multistage Dockerfile, which includes dev dependencies.
 
-By default `dev` dependencies are isntalled during the build
-This is controlled by the build argument `POETRY_INSTALL_DEV`, which defaults to `true` in the Dockerfile (`tennant-middleware/backend/Dockerfile`)
+3. Production
 
-For production, you can either set it to `false` directly in the Dockerfile or override it at build time:
+To build a production-ready image (main dependencies only):
 
-```
-docker-compose build --build-arg "POETRY_INSTALL_DEV=false"
-docker-compose up
+```bash
+docker build --target=production -t tennant-middleware-prod .
 ```
 
 Run a command inside the docker container:
