@@ -3,6 +3,7 @@ name = "tennant middleware"
 version = "0.1.0"
 description = "Middleware connecting front-end with SAP for file maagement (search, download)"
 authors = ["Gakha Pitskhelauri <gakha.pitskhelauri@leverx.com>"]
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.9"
