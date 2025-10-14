@@ -1,6 +1,6 @@
 import os
 
-import alembic.config
+# import alembic.config
 
 from src.config import AppConfig
 
@@ -11,14 +11,14 @@ def get_test_app_config() -> AppConfig:
     )
 
 
-def get_test_alembic_config(test_app_config: AppConfig) -> alembic.config.Config:
-    alembic_config = alembic.config.Config("alembic.ini")
-    alembic_config.set_main_option(
-        "sqlalchemy.url",
-        str(test_app_config.pg_dsn),
-    )
-
-    return alembic_config
+# def get_test_alembic_config(test_app_config: AppConfig) -> alembic.config.Config:
+#     alembic_config = alembic.config.Config("alembic.ini")
+#     alembic_config.set_main_option(
+#         "sqlalchemy.url",
+#         str(test_app_config.pg_dsn),
+#     )
+#
+#     return alembic_config
 
 
 class BaseTestCase:

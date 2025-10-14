@@ -4,11 +4,11 @@ import uuid
 from fastapi import FastAPI, Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from src.infra.database.session import (
-    reset_scoped_session,
-    scoped_session,
-    set_scoped_session,
-)
+# from src.infra.database.session import (
+#     reset_scoped_session,
+#     scoped_session,
+#     set_scoped_session,
+# )
 
 
 class ScopedSessionMiddleware:
@@ -26,8 +26,8 @@ class ScopedSessionMiddleware:
             reset_scoped_session(token=reset_token)
 
 
-def setup_sqlalchemy_scoped_session(app: FastAPI) -> None:
-    app.add_middleware(
-        BaseHTTPMiddleware,
-        dispatch=ScopedSessionMiddleware(),
-    )
+# def setup_sqlalchemy_scoped_session(app: FastAPI) -> None:
+#     app.add_middleware(
+#         BaseHTTPMiddleware,
+#         dispatch=ScopedSessionMiddleware(),
+#     )

@@ -5,7 +5,7 @@ import uvicorn
 
 from src.config import AppConfig, get_config
 from src.infra.application.factory import app_factory
-from src.infra.application.pre_flight_check import pre_flight_check
+# from src.infra.application.pre_flight_check import pre_flight_check
 
 
 def create_app() -> ASGIApp:
@@ -15,7 +15,7 @@ def create_app() -> ASGIApp:
 
 
 async def run_app() -> None:
-    await pre_flight_check()
+    # await pre_flight_check()
 
     config: AppConfig = get_config()
 

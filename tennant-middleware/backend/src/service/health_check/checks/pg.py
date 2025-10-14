@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
-from sqlalchemy import text
+# from sqlalchemy import text
 
-from src.infra.database.session import async_session_factory
+# from src.infra.database.session import async_session_factory
 from src.service.health_check.dto import CheckComponentType, CheckResult
 from src.service.health_check.service import (
     Check,
