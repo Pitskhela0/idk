@@ -1,6 +1,5 @@
 import logging
 import secrets
-from typing import Self
 from typing import Literal
 
 from pydantic import AnyHttpUrl, Field, field_validator
@@ -40,12 +39,6 @@ class AppConfig(BaseSettings):
 
     trace_header_name: str = "X-Trace-ID"
 
-    pg_dsn: URL | None = None
-
-    @field_validator("pg_dsn", mode="before")
-    def coerce_pg_dsn_to_yarl_url(cls, value: str | None) -> URL | None:  # noqa: N805
-        return URL(value) if value else None
-
     cors_origins: list[AnyHttpUrl] = Field(default_factory=list)
     cors_methods: list[str]
     cors_headers: list[str]
@@ -57,16 +50,48 @@ class AppConfig(BaseSettings):
     def coerce_sentry_dsn_to_yarl_url(cls, value: str) -> URL | None:  # noqa: N805
         return URL(value) if value else None
 
-    def get_config_copy_with_masked_passwords(self) -> Self:
+    # JWT Configuration
+    jwt_exp: int = 5
+    jwt_algorithm: str = "HS256"
+    jwt_secret: str = secret_key
+
+    # SPI API Configuration
+    spi_base_url: str
+    spi_username: str
+    spi_password: str
+    spi_timeout_seconds: int = 30
+
+    # Azure Entra ID Configuration
+    azure_tenant_id: str
+    azure_client_id: str
+    azure_jwks_url: str
+
+    # Microsoft Graph API Configuration
+    graph_client_id: str
+    graph_client_secret: str
+    graph_sender_mailbox: str = "drawinglocator@tennantco.com"
+
+    # Application Limits
+    max_email_size_mb: int = 50
+    max_files_per_email: int = 20
+    max_materials_per_search: int = 50
+
+    # OSS Token Service
+    oss_token_service_url: str
+
+    def get_config_copy_with_masked_passwords(self):
         new_config = {}
         for prop, value in dict(self).items():
             if isinstance(value, URL):
                 value = value.with_password("***")
+            elif prop in (
+                "spi_password",
+                "graph_client_secret",
+                "jwt_secret",
+                "secret_key",
+            ):
+                value = "***"
 
             new_config[prop] = value
 
         return type(self)(**new_config)
-
-    jwt_exp: int = 5
-    jwt_algorithm: str = "HS256"
-    jwt_secret: str = secret_key
