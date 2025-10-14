@@ -4,14 +4,11 @@ from fastapi import FastAPI
 from starlette.types import ASGIApp
 
 from src.api.rest.v0.routes import api_v0_router
-# from src.api.rest.v1.routes import api_v1_router
+from src.api.rest.v1.routes import api_v1_router
 from src.config import AppConfig
 from src.infra.application.setup.cors import setup_cors_middleware
 from src.infra.application.setup.logging import setup_logging
 from src.infra.application.setup.sentry import setup_sentry
-# from src.infra.application.setup.sqlalchemy_scoped_session import (
-#     setup_sqlalchemy_scoped_session,
-# )
 from src.infra.application.setup.tracing import setup_tracing_middleware
 
 
@@ -59,17 +56,16 @@ def app_factory(config: AppConfig) -> ASGIApp:
 
     setup_cors_middleware(app, config)
     setup_tracing_middleware(app, config)
-    # setup_sqlalchemy_scoped_session(app)
 
     app.include_router(
         api_v0_router,
         prefix="/api/0",
     )
 
-    # app.include_router(
-    #     api_v1_router,
-    #     prefix="/api/1",
-    # )
+    app.include_router(
+        api_v1_router,
+        prefix="/api/v1"
+    )
 
     logger.info("app is ready")
 
