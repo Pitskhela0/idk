@@ -5,7 +5,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 from src.config import config
-from src.service.health_check.checks import pg, sentry, uptime
+from src.service.health_check.checks import uptime
 from src.service.health_check.dto import HealthOut
 from src.service.health_check.service import HealthCheckService, Probe, ProbeResult
 
@@ -59,13 +59,6 @@ health_check_router = HealthCheckRouter(
         name="live",
         checks=[
             uptime.UptimeCheck(),
-        ],
-    ),
-    Probe(
-        name="ready",
-        checks=[
-            pg.PgCheck(component_id="pg:online"),
-            sentry.SentryCheck(component_id="sentry:configured"),
         ],
     ),
 )

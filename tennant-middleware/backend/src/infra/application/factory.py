@@ -8,7 +8,6 @@ from src.api.rest.v1.routes import api_v1_router
 from src.config import AppConfig
 from src.infra.application.setup.cors import setup_cors_middleware
 from src.infra.application.setup.logging import setup_logging
-from src.infra.application.setup.sentry import setup_sentry
 from src.infra.application.setup.tracing import setup_tracing_middleware
 
 
@@ -44,7 +43,6 @@ def app_factory(config: AppConfig) -> ASGIApp:
     app = FastAPI(**app_props)  # type: ignore[arg-type]
 
     logger.info("setup sentry")
-    setup_sentry(app, config)
 
     if config.environment.is_debug:
         logger.info("app started with config")
