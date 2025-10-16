@@ -42,8 +42,6 @@ def app_factory(config: AppConfig) -> ASGIApp:
 
     app = FastAPI(**app_props)  # type: ignore[arg-type]
 
-    logger.info("setup sentry")
-
     if config.environment.is_debug:
         logger.info("app started with config")
         masked_config = config.get_config_copy_with_masked_passwords()
