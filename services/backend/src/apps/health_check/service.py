@@ -4,11 +4,13 @@ from dataclasses import dataclass
 from itertools import chain, groupby
 import logging
 
+from datetime import UTC, datetime
+import time
+
 from src.apps.health_check.dto import (
     CheckResult,
     CheckComponentType,
 )
-
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +23,26 @@ class Check(ABC):
     @abstractmethod
     async def __call__(self) -> CheckResult:
         raise NotImplementedError
+
+
+@dataclass
+class UptimeCheck(Check):
+    component_id: str = "uptime"
+    component_type: CheckComponentType = CheckComponentType.system
+
+    def __post_init__(self):
+        self.started_at = time.monotonic()
+
+    async def __call__(self) -> CheckResult:
+        uptime = time.monotonic() - self.started_at
+        return CheckResult(
+            component_id=self.component_id,
+            component_type=self.component_type,
+            observed_value=f"{uptime:.3f}",
+            observed_unit="s",
+            status=healthy_status.name,
+            time=datetime.now(UTC).isoformat(),
+        )
 
 
 @dataclass(frozen=True)
@@ -53,8 +75,8 @@ class HealthCheckService:
 
         checks_by_component = {}
         for component_id, checks in groupby(
-            check_results,
-            key=lambda c: c.component_id,
+                check_results,
+                key=lambda c: c.component_id,
         ):
             checks_by_component[component_id] = list(checks)
 
@@ -66,8 +88,8 @@ class HealthCheckService:
         )
 
     async def get_probe_result_status(
-        self,
-        checks: dict[str, list[CheckResult]],
+            self,
+            checks: dict[str, list[CheckResult]],
     ) -> ProbeResultStatus:
         for check in chain.from_iterable(checks.values()):
             if check.status == warn_status.name:

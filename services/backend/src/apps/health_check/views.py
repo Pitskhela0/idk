@@ -1,12 +1,11 @@
 import logging
-from fastapi import Depends, status
+from fastapi import Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 from src.config import config
-from src.apps.health_check.checks import uptime
 from src.apps.health_check.dto import HealthOut
-from src.apps.health_check.service import HealthCheckService, Probe, ProbeResult
+from src.apps.health_check.service import HealthCheckService, Probe, ProbeResult, UptimeCheck
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +31,6 @@ async def health_check_handler(
 LIVENESS_PROBE = Probe(
     name="live",
     checks=[
-        uptime.UptimeCheck(),
+        UptimeCheck(),
     ],
 )
