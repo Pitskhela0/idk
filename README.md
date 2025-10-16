@@ -17,7 +17,7 @@ Installation
 
 1. Copy environment files
 ```bash
-cp tennant-middleware/backend/{example.env,.env}
+cp services/backend/{example.env,.env}
 ```
 
 2. Development
@@ -33,7 +33,7 @@ docker-compose up
 
 To build a production-ready image (main dependencies only):
 ```bash
-docker build --target=production -t tennant-middleware-prod .
+docker build --target=production -t services-prod .
 ```
 
 Run a command inside the docker container:
@@ -73,7 +73,7 @@ Files related to application are in the `src` directory.
     │   ├── example.env
     │   ├── poetry.lock
     │   ├── pyproject.toml
-    │   └── src
+    │   └── apps
     │       ├── api
     │       │   └── rest
     │       │       └── v0

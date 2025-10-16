@@ -1,20 +1,20 @@
 services:
   backend:
     build:
-      context: ./tennant-middleware/backend
+      context: ./services/backend
       target: dev
-    container_name: tennant-middleware-dev
-    image: tennant-middleware-dev
+    container_name: services-dev
+    image: services-dev
     ports:
       - 5000:8000
     env_file:
-      - tennant-middleware/backend/.env
+      - services/backend/.env
     volumes:
-      - ./tennant-middleware/backend/src:/tennant-middleware/src
-      - ./tennant-middleware/backend/tests:/tennant-middleware/tests
-      - ./tennant-middleware/uvicorn/config.json:/tennant-middleware/uvicorn/config.json:ro
+      - ./services/backend/apps:/services/apps
+      - ./services/backend/tests:/services/tests
+      - ./services/uvicorn/config.json:/services/uvicorn/config.json:ro
     command: [
-      "uvicorn", "--factory", "src.main:create_app",
+      "uvicorn", "--factory", "apps.main:create_app",
       "--host", "0.0.0.0",
       "--port", "8000",
       "--reload",
