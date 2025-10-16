@@ -26,7 +26,7 @@ def app_factory(config: AppConfig) -> ASGIApp:
         "redoc_url": None,
     }
 
-    if config.environment.is_deployed:
+    if not config.debug:
         app_props["docs_url"] = None
         app_props["redoc_url"] = None
         app_props["openapi_url"] = None
@@ -42,7 +42,7 @@ def app_factory(config: AppConfig) -> ASGIApp:
 
     app = FastAPI(**app_props)  # type: ignore[arg-type]
 
-    if config.environment.is_debug:
+    if config.debug:
         logger.info("app started with config")
         masked_config = config.get_config_copy_with_masked_passwords()
         for prop, value in dict(masked_config).items():

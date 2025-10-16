@@ -1,12 +1,9 @@
 import logging
-import secrets
 from typing import Literal
 
 from pydantic import AnyHttpUrl, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from yarl import URL
-
-from src.config.environment import Environment
 
 
 _AnyLogLevel = Literal["debug", "info", "warning", "error", "critical"]
@@ -22,7 +19,6 @@ class AppConfig(BaseSettings):
     app_host: AnyHttpUrl
     app_version: str = "0.0.1"
 
-    environment: Environment = Environment.LOCAL
     debug: bool = True
 
     openapi_url: str = "/openapi.json"

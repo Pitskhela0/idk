@@ -21,7 +21,7 @@ async def run_app() -> None:
         f"{__name__}:create_app",
         host=str(config.app_host.host),
         port=int(config.app_host.port),  # type: ignore[arg-type]
-        reload=config.environment.is_debug,
+        reload=config.debug,
         factory=True,
     )
 
