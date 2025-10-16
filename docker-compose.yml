@@ -10,11 +10,11 @@ services:
     env_file:
       - services/backend/.env
     volumes:
-      - ./services/backend/apps:/services/apps
+      - ./services/backend/src:/services/src
       - ./services/backend/tests:/services/tests
       - ./services/uvicorn/config.json:/services/uvicorn/config.json:ro
     command: [
-      "uvicorn", "--factory", "apps.main:create_app",
+      "uvicorn", "--factory", "src.main:create_app",
       "--host", "0.0.0.0",
       "--port", "8000",
       "--reload",

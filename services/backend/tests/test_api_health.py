@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from apps.config import AppConfig
+from src.config import AppConfig
 from tests.base import BaseTestCase
 
 

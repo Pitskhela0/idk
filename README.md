@@ -73,7 +73,7 @@ Files related to application are in the `src` directory.
     │   ├── example.env
     │   ├── poetry.lock
     │   ├── pyproject.toml
-    │   └── apps
+    │   └── src
     │       ├── api
     │       │   └── rest
     │       │       └── v0
@@ -91,10 +91,10 @@ Files related to application are in the `src` directory.
     │       │   │       ├── logging.py
     │       │   │       └── tracing.py
     │       ├── main.py
-    │       └── service
+    │       └── apps
     │           └── health_check
     │               ├── dto.py
-    │               └── service.py
+    │               └── apps.py
     └── uvicorn
         └── config.json
 ```

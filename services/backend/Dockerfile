@@ -10,7 +10,7 @@ RUN pip install -U pip && \
     pip install poetry && \
     poetry config virtualenvs.create false
 
-COPY ./apps /services/apps
+COPY ./src /services/src
 
 # == Development ==
 FROM builder AS dev

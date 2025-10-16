@@ -15,7 +15,7 @@
   },
   "filters": {
     "trace_id": {
-      "()": "apps.infra.application.setup.logging.TraceIdFilter"
+      "()": "src.infra.application.setup.logging.TraceIdFilter"
     }
   },
   "handlers": {
