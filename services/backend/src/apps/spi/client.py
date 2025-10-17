@@ -1,42 +1,47 @@
 import httpx
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 
 class SPIClient:
+    """
+    HTTP client for communicating with the SPI (SAP) API.
+
+    Manages the HTTP connection, authentication, and basic configuration
+    for making requests to the SPI service.
+
+    Attributes:
+        base_url (str): Base URL of the SPI API endpoint.
+        client (httpx.AsyncClient): Configured async HTTP client instance.
+    """
+
     def __init__(self,
                  base_url: str,
                  username: str,
                  password: str,
-                 timeout: int = 30,
-                 max_retries: int = 30):
+                 timeout: int
+                 ):
+        """
+        Initialize the SPI client with connection parameters.
+
+        Args:
+            base_url (str): Base URL of the SPI API (e.g., 'https://spi-api.example.com').
+            username (str): Username for basic authentication.
+            password (str): Password for basic authentication.
+            timeout (int): Request timeout in seconds.
+        """
 
         self.base_url = base_url.rstrip("/")
-        self.username = username
-        self.password = password
-        self.timeout = timeout
-        self.max_retries = max_retries
 
         self.client = httpx.AsyncClient(
             auth=(username, password),
             timeout=httpx.Timeout(timeout),
-            limits=httpx.Limits(
-                max_keepalive_connections=10,
-                max_connections=20,
-            ),
             follow_redirects=True
         )
 
         logger.info(
-            "SPIClient initialized with base_url=%s, timeout=%s, max_retries=%s",
+            "SPIClient initialized with base_url=%s, timeout=%s",
             self.base_url,
-            timeout,
-            max_retries
+            timeout
         )
-
-
-
-
-
