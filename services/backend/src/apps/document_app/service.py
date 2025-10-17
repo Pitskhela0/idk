@@ -15,7 +15,9 @@ class DocumentService:
         self.client = client
 
     async def search(self, request: SearchRequest) -> SearchResponse:
-        pass
+        params = {
+            part_numbers
+        }
 
     async def download(self, request: DownloadRequest) -> DownloadResponse:
         pass

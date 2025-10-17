@@ -2,7 +2,6 @@ import base64
 from datetime import datetime
 
 from pydantic import BaseModel, Field
-
 from src.apps.document_app.constants import DTOConstants
 
 
@@ -37,6 +36,10 @@ class SearchRequest(BaseModel):
     )
 
 
+class NotFoundInfo(BaseModel):
+    part_numbers: list[int]
+
+
 class SearchResponse(BaseModel):
     """
     Response model for document search results.
@@ -45,10 +48,7 @@ class SearchResponse(BaseModel):
     """
 
     data: list[Document] = Field(..., description=DTOConstants.DESC_FOUND_DOCUMENTS)
-    not_found_part_numbers: list[int] = Field(
-        ...,
-        description=DTOConstants.DESC_NOT_FOUND_PART_NUMBERS,
-    )
+    not_found: NotFoundInfo
 
 
 class DownloadRequest(BaseModel):
@@ -59,7 +59,7 @@ class DownloadRequest(BaseModel):
     the specific document to download.
     """
 
-    id: str = Field(..., description=DTOConstants.DESC_DOWNLOAD_ID)
+    id: list[str] = Field(..., description=DTOConstants.DESC_DOWNLOAD_ID)
 
 
 class DownloadResponse(BaseModel):

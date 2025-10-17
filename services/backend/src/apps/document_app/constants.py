@@ -21,7 +21,7 @@ class DTOConstants:
     DESC_FOUND_DOCUMENTS = "List of found documents"
     DESC_NOT_FOUND_PART_NUMBERS = "Part numbers that were not found in the system"
 
-    DESC_DOWNLOAD_ID = "Internal document identifier to download"
+    DESC_DOWNLOAD_ID = "Internal document identifiers to download"
     DESC_FILE_NAME = "Original file name"
     DESC_CONTENT_TYPE = "MIME type (e.g., 'application/pdf')"
     DESC_BASE64_CONTENT = "Base64-encoded file content"
