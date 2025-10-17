@@ -1,0 +1,81 @@
+[tool.poetry]
+name = "tennant middleware"
+version = "0.1.0"
+description = "Middleware connecting front-end with SAP for file maagement (search, download)"
+authors = ["Gakha Pitskhelauri <gakha.pitskhelauri@leverx.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.101.0"
+uvicorn = {extras = ["standart"], version = "^0.27.0.post1"}
+pydantic = {extras = ["email"], version = "^2.6.1"}
+pydantic-settings = "^2.0.0"
+yarl = "^1.9.2"
+tenacity = "^8.2.2"
+gunicorn = "^21.2.0"
+httpx = "^0.26.0"
+bcrypt = "^4.1.2"
+pyjwt = "^2.8.0"
+python-multipart = "^0.0.7"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2"
+pytest-asyncio = "^0.23.4"
+black = {version = "^19.10b0", allow-prereleases = true}
+autopep8 = "^2.0.0"
+pylint = "^2.15.8"
+ruff = "^0.1.1"
+mypy = "^1.5.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = "--asyncio-mode=auto"
+
+[tool.black]
+line-length = 88
+target-version = ['py39', 'py310', 'py311']
+include = '\.pyi?$'
+exclude = '''
+/(
+  \.toml
+  |\.sh
+  |\.git
+  |\.ini
+  |Dockerfile
+  |Jenkinfile
+)/
+'''
+
+[tool.mypy]
+warn_unused_configs = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+enable_error_code = [
+    "ignore-without-code",
+    "truthy-bool",
+]
+
+[tool.ruff.lint]
+select = [
+    "E4",
+    "E7",
+    "E9",
+    "F",  # pyflakes
+    "N",  # pep8-naming
+    "W",  # pycodestyle
+    "B",  # flake8-bugbear
+    "G",  # flake8-logging-format
+    "T20",  # flake8-print
+    "RUF",  # ruff-specific
+    "ASYNC",  # flake8-async
+    "ISC",  # flake8-implicit-str-concat
+]
+ignore = [
+    "B008",  # function-call-in-default-argument
+]

@@ -1,0 +1,22 @@
+services:
+  backend:
+    build:
+      context: ./services/backend
+      target: dev
+    container_name: services-dev
+    image: services-dev
+    ports:
+      - 5000:8000
+    env_file:
+      - services/backend/.env
+    volumes:
+      - ./services/backend/src:/services/src
+      - ./services/backend/tests:/services/tests
+      - ./services/uvicorn/config.json:/services/uvicorn/config.json:ro
+    command: [
+      "uvicorn", "--factory", "src.main:create_app",
+      "--host", "0.0.0.0",
+      "--port", "8000",
+      "--reload",
+      "--log-config", "uvicorn/config.json"
+    ]
