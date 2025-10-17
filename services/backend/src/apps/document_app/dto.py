@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
-from src.apps.spi.constants import DTOConstants
+from src.apps.document_app.constants import DTOConstants
 
 
 class Document(BaseModel):
@@ -87,3 +87,18 @@ class DownloadResponse(BaseModel):
             bytes: Decoded binary file content ready for streaming or saving.
         """
         return base64.b64decode(self.content)
+
+
+class PreviewRequest(BaseModel):
+    """
+        Request model for previewing a document.
+    """
+    id: str = Field(..., description=DTOConstants.DESC_DOCUMENT_ID)
+
+
+class PreviewResponse(BaseModel):
+    """
+        Response model for previewing a document.
+    """
+    file_name: str = Field(..., description=DTOConstants.DESC_FILE_NAME)
+    content: str = Field(..., description=DTOConstants.DESC_BASE64_CONTENT)

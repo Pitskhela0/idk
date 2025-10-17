@@ -1,12 +1,12 @@
 """
-Constants for SPI service.
+Constants for document app.
 
 Contains validation limits, field descriptions, and other reusable constants.
 """
 
 
 class DTOConstants:
-    """Constants used in SPI DTOs."""
+    """Constants used in document DTOs."""
 
     MIN_PART_NUMBERS = 1
     MAX_PART_NUMBERS = 10

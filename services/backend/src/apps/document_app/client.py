@@ -4,15 +4,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class SPIClient:
+class DocumentClient:
     """
-    HTTP client for communicating with the SPI (SAP) API.
+    HTTP client for communicating with the document (SAP) API.
 
     Manages the HTTP connection, authentication, and basic configuration
-    for making requests to the SPI service.
+    for making requests to the document service.
 
     Attributes:
-        base_url (str): Base URL of the SPI API endpoint.
+        base_url (str): Base URL of the document API endpoint.
         client (httpx.AsyncClient): Configured async HTTP client instance.
     """
 
@@ -23,10 +23,10 @@ class SPIClient:
                  timeout: int
                  ):
         """
-        Initialize the SPI client with connection parameters.
+        Initialize the document client with connection parameters.
 
         Args:
-            base_url (str): Base URL of the SPI API (e.g., 'https://spi-api.example.com').
+            base_url (str): Base URL of the document API (e.g., 'https://document-api.example.com').
             username (str): Username for basic authentication.
             password (str): Password for basic authentication.
             timeout (int): Request timeout in seconds.
@@ -41,7 +41,7 @@ class SPIClient:
         )
 
         logger.info(
-            "SPIClient initialized with base_url=%s, timeout=%s",
+            "DocumentClient initialized with base_url=%s, timeout=%s",
             self.base_url,
             timeout
         )
