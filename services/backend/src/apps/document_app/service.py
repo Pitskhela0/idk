@@ -101,7 +101,6 @@ class DocumentService:
         url = f"{self.client.base_url}{APIEndpoints.PREVIEW.format(document_id=request.id)}"
         response = await self.client.client.get(url)
 
-        # Handle 404 specifically before generic error handling
         if response.status_code == 404:
             logger.warning("Document not found: id=%s", request.id)
             raise DocumentFileNotFoundError(file_id=request.id)
