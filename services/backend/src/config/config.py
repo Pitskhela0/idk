@@ -12,8 +12,45 @@ _AnyLogLevel = Literal["debug", "info", "warning", "error", "critical"]
 logger = logging.getLogger(__name__)
 
 
+# Microsoft Azure AD Configuration
+class AzureConfig(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="AZURE_")
+
+    client_id: str
+    tenant_id: str
+
+    @property
+    def issuer(self) -> str:
+        return f"https://login.microsoftonline.com/{self.tenant_id}/v2.0"
+
+    @property
+    def jwks_url(self) -> str:
+        return f"{self.issuer}/discovery/v2.0/keys"
+
+
+# Microsoft Graph API Configuration
+class GraphConfig(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="GRAPH_")
+    
+    client_id: str
+    client_secret: str
+    sender_mailbox: str = "drawinglocator@tennantco.com"
+
+
+class SAPCPIConfig(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="SAP_CPI_")
+
+    token_obtain_url: AnyHttpUrl
+    client_id: str
+    client_secret: str
+
+
 class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="")
+
+    azure: AzureConfig = Field(default_factory=AzureConfig) # type: ignore[arg-type]
+    graph: GraphConfig = Field(default_factory=GraphConfig) # type: ignore[arg-type]
+    sap_cpi: SAPCPIConfig = Field(default_factory=SAPCPIConfig) # type: ignore[arg-type]
 
     app_name: str
     app_host: AnyHttpUrl
@@ -37,11 +74,6 @@ class AppConfig(BaseSettings):
     cors_methods: list[str]
     cors_headers: list[str]
 
-    # Microsoft Graph API Configuration
-    graph_client_id: str
-    graph_client_secret: str
-    graph_sender_mailbox: str = "drawinglocator@tennantco.com"
-
     # Application Limits
     max_email_size_mb: int = 50
 
@@ -50,10 +82,9 @@ class AppConfig(BaseSettings):
         for prop, value in dict(self).items():
             if isinstance(value, URL):
                 value = value.with_password("***")
-            elif prop in (
-                "graph_client_secret",  # add other secrets if needed
-            ):
-                value = "***"
+            #
+            # if isinstance(value, BaseSettings):
+            #     value = value.get_config_copy_with_masked_passwords()
 
             new_config[prop] = value
 

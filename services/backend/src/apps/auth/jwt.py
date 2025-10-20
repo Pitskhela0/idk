@@ -9,9 +9,9 @@ import jwt
 
 config = get_config()
 
-oauth2_scheme = OAuth2PasswordBearer(f"https://login.microsoftonline.com/{config.azure_client_id}/oauth2/v2.0/token")
+oauth2_scheme = OAuth2PasswordBearer(f"https://login.microsoftonline.com/{config.azure.client_id}/oauth2/v2.0/token")
 
-ISSUER = f"https://login.microsoftonline.com/{config.azure_tenant_id}/v2.0"
+ISSUER = f"https://login.microsoftonline.com/{config.azure.tenant_id}/v2.0"
 
 
 async def get_signing_key(token_kid: str):
@@ -38,7 +38,7 @@ async def decode_jwt(token: str = Depends(oauth2_scheme)) -> dict[str, Any]:
             token,
             key=public_key,
             algorithms=["RS256"],
-            audience=config.azure_client_id,
+            audience=config.azure.client_id,
             issuer=ISSUER,
         )
         return payload
