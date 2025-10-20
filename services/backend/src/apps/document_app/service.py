@@ -1,4 +1,3 @@
-# src/apps/document_app/service.py
 """
 Service layer for document operations.
 

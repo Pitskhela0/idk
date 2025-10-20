@@ -45,3 +45,8 @@ class DocumentClient:
             self.base_url,
             timeout
         )
+
+    async def close(self) -> None:
+        """Close the HTTP client and cleanup resources."""
+        await self.client.aclose()
+        logger.info("DocumentClient closed")
