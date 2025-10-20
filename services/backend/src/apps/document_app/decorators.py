@@ -1,4 +1,3 @@
-# src/apps/document_app/decorators.py
 """
 Decorators for common service-layer patterns.
 """
