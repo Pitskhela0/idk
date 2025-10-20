@@ -40,6 +40,7 @@ class GraphConfig(BaseSettings):
 class SAPCPIConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="SAP_CPI_")
 
+    document_base_url: AnyHttpUrl
     token_obtain_url: AnyHttpUrl
     client_id: str
     client_secret: str
