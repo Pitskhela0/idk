@@ -1,7 +1,8 @@
 import logging
-from typing import Literal
+from typing import Literal, Any
 
 from pydantic import AnyHttpUrl, Field
+from pydantic_core import Url
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from yarl import URL
 
@@ -93,15 +94,27 @@ class AppConfig(BaseSettings):
     # Application Limits
     max_email_size_mb: int = 50
 
-    def get_config_copy_with_masked_passwords(self):
-        new_config = {}
-        for prop, value in dict(self).items():
-            if isinstance(value, URL):
-                value = value.with_password("***")
-            #
-            # if isinstance(value, BaseSettings):
-            #     value = value.get_config_copy_with_masked_passwords()
+    def get_config_copy_with_masked_passwords(self) -> dict[str, Any]:
+        """
+        Returns a nested dictionary copy of this config:
+        - URL passwords are masked with '***'
+        - Nested BaseSettings are recursively converted to dictionaries
+        - Lists and dicts are also handled recursively
+        """
+        def mask_value(value: Any) -> Any:
+            if isinstance(value, Url):
+                if value.password is not None:
+                    return URL(str(value)).with_password("***")
 
-            new_config[prop] = value
+            elif isinstance(value, BaseSettings):
+                # recursively process nested BaseSettings
+                return {k: mask_value(v) for k, v in value.model_dump().items()}
 
-        return type(self)(**new_config)
+            elif isinstance(value, list):
+                return [mask_value(v) for v in value]
+
+            elif isinstance(value, dict):
+                return {k: mask_value(v) for k, v in value.items()}
+            return value
+
+        return {k: mask_value(v) for k, v in self.model_dump().items()}
