@@ -36,6 +36,7 @@ def create_lifespan(config: AppConfig):
         await document_client.close()
     return lifespan
 
+
 def app_factory(config: AppConfig) -> ASGIApp:
     setup_logging(config)
 

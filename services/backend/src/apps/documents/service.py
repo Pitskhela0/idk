@@ -4,14 +4,9 @@ from src.apps.documents.client import DocumentClient
 from src.apps.documents.constants import APIEndpoints
 from src.apps.documents.decorators import handle_http_errors
 from src.apps.documents.dto import (
-    SearchRequest,
     SearchResponse,
-    DownloadRequest,
-    DownloadResponse,
-    PreviewRequest,
-    PreviewResponse,
+    GetResponse,
 )
-from src.apps.documents.exceptions import DocumentFileNotFoundError
 
 logger = logging.getLogger(__name__)
 
@@ -24,14 +19,15 @@ class DocumentService:
         logger.info("DocumentService initialized")
 
     @handle_http_errors("search")
-    async def search(self, request: SearchRequest) -> SearchResponse:
-        logger.info("Searching for %d part numbers", len(request.part_numbers))
+    async def search(self, part_numbers: list[int]) -> SearchResponse:
+        logger.info("Searching for %d part numbers", len(part_numbers))
 
-        part_numbers_str = ",".join(map(str, request.part_numbers))
         url = f"{self.client.base_url}{APIEndpoints.SEARCH}"
-        params = {"part_numbers": part_numbers_str}
+
+        params = {"part_numbers": "".join(map(str, part_numbers))}
 
         response = await self.client.client.get(url, params=params)
+
         response.raise_for_status()
 
         search_response = SearchResponse(**response.json())
@@ -44,29 +40,17 @@ class DocumentService:
 
         return search_response
 
-    @handle_http_errors("download")
-    async def download(self, request: DownloadRequest) -> DownloadResponse:
-        raise NotImplementedError("Download functionality coming soon")
-
-    @handle_http_errors("preview")
-    async def preview(self, request: PreviewRequest) -> PreviewResponse:
-        logger.info("Previewing document with id=%s", request.id)
-
-        url = f"{self.client.base_url}{APIEndpoints.PREVIEW.format(document_id=request.id)}"
-        response = await self.client.client.get(url)
-
-        if response.status_code == 404:
-            logger.warning("Document not found: id=%s", request.id)
-            raise DocumentFileNotFoundError(file_id=request.id)
+    @handle_http_errors("get")
+    async def get(self, ids: list[str]) -> GetResponse:
+        url = f"{self.client.base_url}{APIEndpoints.GET}"
+        response = await self.client.client.get(url, params={"ids": ids})
 
         response.raise_for_status()
 
-        preview_response = PreviewResponse(**response.json())
+        get_response = GetResponse(**response.json())
 
         logger.info(
-            "Preview completed: file_name=%s, size=%d bytes",
-            preview_response.file_name,
-            len(preview_response.content),
-        )
+            "Get completed: retrieved %d documents",
+            len(get_response.data))
 
-        return preview_response
+        return get_response

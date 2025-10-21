@@ -1,17 +1,18 @@
 from datetime import datetime
 
 from pydantic import BaseModel, Field, ConfigDict
-from src.apps.documents.constants import DTOConstants
+
+from src.apps.documents.constants import MIN_PART_NUMBERS, MAX_PART_NUMBERS
 
 
 class Document(BaseModel):
     """Document metadata. Multiple documents can share the same part_number with different revisions."""
 
-    id: str = Field(..., description=DTOConstants.DESC_DOCUMENT_ID)
-    part_number: int = Field(..., description=DTOConstants.DESC_PART_NUMBER)
-    rev: str = Field(..., description=DTOConstants.DESC_REVISION)
-    date_created: datetime = Field(..., description=DTOConstants.DESC_DATE_CREATED)
-    file_size_bytes: int = Field(..., description=DTOConstants.DESC_FILE_SIZE)
+    id: str = Field(..., description="Internal document identifier (UUID or numeric)")
+    part_number: int = Field(..., description="Part number identifying the document type")
+    rev: str = Field(..., description="Document revision (e.g., 'A', '-B')")
+    date_created: datetime = Field(..., description="Document creation timestamp")
+    file_size_bytes: int = Field(..., description="File size in bytes")
 
 
 class SearchRequest(BaseModel):
@@ -19,36 +20,23 @@ class SearchRequest(BaseModel):
 
     part_numbers: list[int] = Field(
         ...,
-        min_length=DTOConstants.MIN_PART_NUMBERS,
-        max_length=DTOConstants.MAX_PART_NUMBERS,
-        description=DTOConstants.DESC_PART_NUMBERS_LIST,
+        min_length=MIN_PART_NUMBERS,
+        max_length=MAX_PART_NUMBERS,
+        description="List of part numbers to search (minimum 1, maximum 10)",
     )
 
 
 class NotFoundInfo(BaseModel):
     part_numbers: list[int] = Field(
         default_factory=list,
-        description=DTOConstants.DESC_NOT_FOUND_PART_NUMBERS
+        description="Part numbers that were not found in the system"
     )
 
 
 class SearchResponse(BaseModel):
     model_config = ConfigDict(extra="ignore")
-    data: list[Document] = Field(..., description=DTOConstants.DESC_FOUND_DOCUMENTS)
+    data: list[Document] = Field(..., description="List of found documents")
     not_found: NotFoundInfo
-
-
-class DownloadRequest(BaseModel):
-    """
-    Uses internal document IDs (not part numbers).
-    Response: single file for one ID, ZIP for multiple IDs.
-    """
-
-    document_ids: list[str] = Field(
-        ...,
-        min_length=1,
-        description=DTOConstants.DESC_DOWNLOAD_IDS
-    )
 
 
 class DownloadResponse(BaseModel):
@@ -59,24 +47,20 @@ class DownloadResponse(BaseModel):
 
     file_name: str = Field(
         ...,
-        description=DTOConstants.DESC_DOWNLOAD_FILE_NAME
+        description="Name of the downloaded file"
     )
     content: bytes = Field(
         ...,
-        description=DTOConstants.DESC_DOWNLOAD_CONTENT
+        description="Raw binary file content"
     )
 
     class Config:
         arbitrary_types_allowed = True
 
 
-class PreviewRequest(BaseModel):
-    id: str = Field(..., description=DTOConstants.DESC_DOCUMENT_ID)
-
-
-class PreviewResponse(BaseModel):
-    file_name: str = Field(..., description=DTOConstants.DESC_FILE_NAME)
-    content: bytes = Field(..., description=DTOConstants.DESC_PREVIEW_CONTENT)
+class GetResponse(BaseModel):
+    file_name: str = Field(..., description="Original file name")
+    content: bytes = Field(..., description="Raw binary file content for preview")
 
     class Config:
         arbitrary_types_allowed = True

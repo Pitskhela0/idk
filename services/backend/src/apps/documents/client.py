@@ -19,7 +19,11 @@ class DocumentClient:
         self.client = httpx.AsyncClient(
             auth=(username, password),
             timeout=httpx.Timeout(timeout),
-            follow_redirects=True
+            follow_redirects=True,
+            limits=httpx.Limits(
+                max_connections=300,
+                max_keepalive_connections=60
+            )
         )
 
         logger.info(
