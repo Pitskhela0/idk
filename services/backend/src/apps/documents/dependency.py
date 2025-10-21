@@ -7,7 +7,7 @@ from fastapi import Depends, Request
 
 @lru_cache
 def get_document_client(request: Request) -> DocumentClient:
-    """Get DocumentClient from application state."""
+    """Retrieve DocumentClient from FastAPI app state."""
 
     client = getattr(request.app.state, 'document_client', None)
     if client is None:
@@ -16,5 +16,4 @@ def get_document_client(request: Request) -> DocumentClient:
 
 
 def get_document_service(client: DocumentClient = Depends(get_document_client)) -> DocumentService:
-    """Create and return a DocumentService instance."""
     return DocumentService(client=client)

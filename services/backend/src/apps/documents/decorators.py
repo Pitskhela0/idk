@@ -1,6 +1,3 @@
-"""
-Decorators for common service-layer patterns.
-"""
 import logging
 from functools import wraps
 from typing import Callable, TypeVar, ParamSpec
@@ -22,15 +19,7 @@ T = TypeVar("T")
 
 def handle_http_errors(operation_name: str):
     """
-    Decorator to handle common HTTP errors for document operations.
-
-    Args:
-        operation_name: Name of the operation for logging (e.g., "search", "download")
-
-    Usage:
-        @handle_http_errors("search")
-        async def search(self, request: SearchRequest) -> SearchResponse:
-            ...
+    Converts httpx exceptions into domain-specific DocumentError types.
     """
 
     def decorator(func: Callable[P, T]) -> Callable[P, T]:

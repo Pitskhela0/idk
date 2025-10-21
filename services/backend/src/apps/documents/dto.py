@@ -5,12 +5,7 @@ from src.apps.documents.constants import DTOConstants
 
 
 class Document(BaseModel):
-    """
-    Document metadata model.
-
-    Represents a document stored in the CPI system with its core attributes.
-    Multiple documents can share the same part number but have different revisions.
-    """
+    """Document metadata. Multiple documents can share the same part_number with different revisions."""
 
     id: str = Field(..., description=DTOConstants.DESC_DOCUMENT_ID)
     part_number: int = Field(..., description=DTOConstants.DESC_PART_NUMBER)
@@ -20,12 +15,7 @@ class Document(BaseModel):
 
 
 class SearchRequest(BaseModel):
-    """
-    Internal request model for searching documents by part numbers.
-
-    Note: This is used internally by the service layer.
-    The API layer accepts part_numbers as query parameters.
-    """
+    """Internal service-layer model. API layer receives part_numbers as query params."""
 
     part_numbers: list[int] = Field(
         ...,
@@ -36,8 +26,6 @@ class SearchRequest(BaseModel):
 
 
 class NotFoundInfo(BaseModel):
-    """Information about part numbers that were not found."""
-
     part_numbers: list[int] = Field(
         default_factory=list,
         description=DTOConstants.DESC_NOT_FOUND_PART_NUMBERS
@@ -45,11 +33,6 @@ class NotFoundInfo(BaseModel):
 
 
 class SearchResponse(BaseModel):
-    """
-    Response model for document search results.
-
-    Contains found documents and tracks which part numbers had no matches.
-    """
     model_config = ConfigDict(extra="ignore")
     data: list[Document] = Field(..., description=DTOConstants.DESC_FOUND_DOCUMENTS)
     not_found: NotFoundInfo
@@ -57,14 +40,8 @@ class SearchResponse(BaseModel):
 
 class DownloadRequest(BaseModel):
     """
-    Request model for downloading documents.
-
-    Uses POST method with document IDs in request body.
-    Uses internal document IDs (not part numbers) to identify specific documents.
-
-    Response behavior:
-    - Single document_id: Returns the file directly (PDF, DOCX, etc.)
-    - Multiple document_ids: Returns a ZIP file containing all documents
+    Uses internal document IDs (not part numbers).
+    Response: single file for one ID, ZIP for multiple IDs.
     """
 
     document_ids: list[str] = Field(
@@ -76,14 +53,8 @@ class DownloadRequest(BaseModel):
 
 class DownloadResponse(BaseModel):
     """
-    Response model for download operation.
-
-    Document API returns raw binary content:
-    - Single file: The actual file content (PDF, DOCX, etc.)
-    - Multiple files: ZIP archive containing all requested documents
-
-    This model represents the raw response from document API.
-    The API layer transforms this into FastAPI StreamingResponse.
+    Raw binary from CPI API. Single file or ZIP.
+    API layer transforms this into StreamingResponse.
     """
 
     file_name: str = Field(
@@ -100,18 +71,10 @@ class DownloadResponse(BaseModel):
 
 
 class PreviewRequest(BaseModel):
-    """
-    Request model for previewing a document.
-    """
-
     id: str = Field(..., description=DTOConstants.DESC_DOCUMENT_ID)
 
 
 class PreviewResponse(BaseModel):
-    """
-    Response model for previewing a document.
-    """
-
     file_name: str = Field(..., description=DTOConstants.DESC_FILE_NAME)
     content: bytes = Field(..., description=DTOConstants.DESC_PREVIEW_CONTENT)
 

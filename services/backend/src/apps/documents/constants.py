@@ -1,13 +1,4 @@
-"""
-Constants for document app.
-
-Contains validation limits, field descriptions, and other reusable constants.
-"""
-
-
 class DTOConstants:
-    """Constants used in document DTOs."""
-
     MIN_PART_NUMBERS = 1
     MAX_PART_NUMBERS = 10
 
@@ -30,8 +21,8 @@ class DTOConstants:
 
 
 class APIEndpoints:
-    """CPI API endpoint paths."""
-
+    """SAP CPI API paths."""
+    
     SEARCH = "/api/v1/documents"
     DOWNLOAD = "/api/v1/documents/download"
     PREVIEW = "/api/v1/documents/preview/{document_id}"

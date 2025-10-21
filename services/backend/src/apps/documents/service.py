@@ -1,8 +1,3 @@
-"""
-Service layer for document operations.
-
-Handles business logic and communication with the CPI API.
-"""
 import logging
 
 from src.apps.documents.client import DocumentClient
@@ -22,34 +17,14 @@ logger = logging.getLogger(__name__)
 
 
 class DocumentService:
-    """
-    Service layer for document operations.
-
-    Handles business logic and communication with the CPI API.
-    All HTTP errors are handled by the @handle_http_errors decorator.
-    """
+    """Business logic layer for SAP document operations."""
 
     def __init__(self, client: DocumentClient) -> None:
-        """
-        Initialize the service with a document client.
-
-        Args:
-            client: Configured DocumentClient instance for API communication.
-        """
         self.client = client
         logger.info("DocumentService initialized")
 
     @handle_http_errors("search")
     async def search(self, request: SearchRequest) -> SearchResponse:
-        """
-        Search for documents by part numbers.
-
-        Args:
-            request: SearchRequest containing part numbers to search.
-
-        Returns:
-            SearchResponse: Found documents and list of not found part numbers.
-        """
         logger.info("Searching for %d part numbers", len(request.part_numbers))
 
         part_numbers_str = ",".join(map(str, request.part_numbers))
@@ -71,31 +46,10 @@ class DocumentService:
 
     @handle_http_errors("download")
     async def download(self, request: DownloadRequest) -> DownloadResponse:
-        """
-        Download documents by their IDs.
-
-        Args:
-            request: DownloadRequest containing document IDs.
-
-        Returns:
-            DownloadResponse: Downloaded document(s) with content.
-        """
         raise NotImplementedError("Download functionality coming soon")
 
     @handle_http_errors("preview")
     async def preview(self, request: PreviewRequest) -> PreviewResponse:
-        """
-        Preview a single document.
-
-        Args:
-            request: PreviewRequest containing document ID.
-
-        Returns:
-            PreviewResponse: Document preview with raw binary content.
-
-        Raises:
-            DocumentFileNotFoundError: If document ID doesn't exist.
-        """
         logger.info("Previewing document with id=%s", request.id)
 
         url = f"{self.client.base_url}{APIEndpoints.PREVIEW.format(document_id=request.id)}"
