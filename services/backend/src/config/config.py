@@ -12,6 +12,12 @@ _AnyLogLevel = Literal["debug", "info", "warning", "error", "critical"]
 logger = logging.getLogger(__name__)
 
 
+class EmailConfig(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="EMAIL_")
+
+    sender_mailbox: str = "drawinglocator@tennantco.com"
+
+
 # Microsoft Azure AD Configuration
 class AzureConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="AZURE_")
@@ -34,7 +40,15 @@ class GraphConfig(BaseSettings):
     
     client_id: str
     client_secret: str
-    sender_mailbox: str = "drawinglocator@tennantco.com"
+
+    _email_config: EmailConfig | None = None
+
+    @property
+    def sender_mailbox(self) -> str:
+        if self._email_config is None:
+            self._email_config = EmailConfig() # type: ignore[arg-type]
+
+        return self._email_config.sender_mailbox
 
 
 class SAPCPIConfig(BaseSettings):
@@ -49,6 +63,7 @@ class SAPCPIConfig(BaseSettings):
 class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="")
 
+    email: EmailConfig = Field(default_factory=EmailConfig) # type: ignore[arg-type]
     azure: AzureConfig = Field(default_factory=AzureConfig) # type: ignore[arg-type]
     graph: GraphConfig = Field(default_factory=GraphConfig) # type: ignore[arg-type]
     sap_cpi: SAPCPIConfig = Field(default_factory=SAPCPIConfig) # type: ignore[arg-type]
