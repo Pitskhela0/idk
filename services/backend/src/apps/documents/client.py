@@ -1,6 +1,8 @@
 import httpx
 import logging
 
+from src.apps.documents.constants import APIEndpoints
+
 logger = logging.getLogger(__name__)
 
 
@@ -16,7 +18,7 @@ class DocumentClient:
     ):
         self.base_url = base_url.rstrip("/")
 
-        self.client = httpx.AsyncClient(
+        self.http_client = httpx.AsyncClient(
             auth=(username, password),
             timeout=httpx.Timeout(timeout),
             follow_redirects=True,
@@ -32,6 +34,22 @@ class DocumentClient:
             timeout
         )
 
+    # todo: error handling logic for get method
+    async def get_document_content(self, document_id: str) -> bytes | None:
+        url = f"{self.base_url}{APIEndpoints.GET}"
+        params = {"id": document_id}
+
+        try:
+            response = await self.http_client.get(url, params=params)
+            response.raise_for_status()
+
+            return response.content
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
+                logger.warning("document not found: %s", document_id)
+                return None
+            raise
+
     async def close(self) -> None:
-        await self.client.aclose()
+        await self.http_client.aclose()
         logger.info("DocumentClient closed")
