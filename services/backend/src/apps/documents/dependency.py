@@ -1,7 +1,7 @@
 from functools import lru_cache
 
-from src.apps.document_app.client import DocumentClient
-from src.apps.document_app.service import DocumentService
+from src.apps.documents.client import DocumentClient
+from src.apps.documents.service import DocumentService
 from fastapi import Depends, Request
 
 

@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from starlette.types import ASGIApp
 from contextlib import asynccontextmanager
 
-from src.apps.document_app.client import DocumentClient
+from src.apps.documents.client import DocumentClient
 
 from src.api.rest.v0.routes import api_v0_router
 from src.api.rest.v1.routes import api_v1_router

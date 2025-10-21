@@ -5,10 +5,10 @@ Handles business logic and communication with the CPI API.
 """
 import logging
 
-from src.apps.document_app.client import DocumentClient
-from src.apps.document_app.constants import APIEndpoints
-from src.apps.document_app.decorators import handle_http_errors
-from src.apps.document_app.dto import (
+from src.apps.documents.client import DocumentClient
+from src.apps.documents.constants import APIEndpoints
+from src.apps.documents.decorators import handle_http_errors
+from src.apps.documents.dto import (
     SearchRequest,
     SearchResponse,
     DownloadRequest,
@@ -16,7 +16,7 @@ from src.apps.document_app.dto import (
     PreviewRequest,
     PreviewResponse,
 )
-from src.apps.document_app.exceptions import DocumentFileNotFoundError
+from src.apps.documents.exceptions import DocumentFileNotFoundError
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from pydantic import BaseModel, Field, ConfigDict
-from src.apps.document_app.constants import DTOConstants
+from src.apps.documents.constants import DTOConstants
 
 
 class Document(BaseModel):

@@ -16,12 +16,13 @@ class DocumentClient:
         client (httpx.AsyncClient): Configured async HTTP client instance.
     """
 
-    def __init__(self,
-                 base_url: str,
-                 username: str,
-                 password: str,
-                 timeout: int
-                 ):
+    def __init__(
+            self,
+            base_url: str,
+            username: str,
+            password: str,
+            timeout: int
+    ):
         """
         Initialize the document client with connection parameters.
 

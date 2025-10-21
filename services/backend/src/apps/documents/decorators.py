@@ -7,7 +7,7 @@ from typing import Callable, TypeVar, ParamSpec
 
 import httpx
 
-from src.apps.document_app.exceptions import (
+from src.apps.documents.exceptions import (
     DocumentConnectionError,
     DocumentTimeoutError,
     DocumentAuthenticationError,
