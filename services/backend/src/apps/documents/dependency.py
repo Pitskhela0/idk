@@ -1,19 +1,45 @@
-from functools import lru_cache
+from typing import AsyncGenerator
+
+from fastapi import Depends
 
 from src.apps.documents.client import DocumentClient
-from src.apps.documents.service import DocumentService
-from fastapi import Depends, Request
+from src.apps.documents.service import (
+    SearchDocumentAPIService,
+    DownloadDocumentAPIService,
+    PreviewDocumentAPIService
+)
+from src.config import get_config, AppConfig
 
 
-@lru_cache
-def get_document_client(request: Request) -> DocumentClient:
-    """Retrieve DocumentClient from FastAPI app state."""
+async def get_document_client(
+        config: AppConfig = Depends(get_config)
+) -> AsyncGenerator[DocumentClient, None]:
 
-    client = getattr(request.app.state, 'document_client', None)
-    if client is None:
-        raise RuntimeError("DocumentClient not initialized")
-    return client
+    client = DocumentClient(
+        base_url=config.document_base_url,
+        username=config.document_username,
+        password=config.document_password,
+        timeout=config.document_timeout_seconds
+    )
+    try:
+        yield client
+    finally:
+        await client.http_client.aclose()
 
 
-def get_document_service(client: DocumentClient = Depends(get_document_client)) -> DocumentService:
-    return DocumentService(client=client)
+def get_search_service(
+        client: DocumentClient = Depends(get_document_client)
+) -> SearchDocumentAPIService:
+    return SearchDocumentAPIService(client=client)
+
+
+def get_download_service(
+        client: DocumentClient = Depends(get_document_client)
+) -> DownloadDocumentAPIService:
+    return DownloadDocumentAPIService(client=client)
+
+
+def get_preview_service(
+        client: DocumentClient = Depends(get_document_client)
+) -> PreviewDocumentAPIService:
+    return PreviewDocumentAPIService(client=client)

@@ -1,23 +1,31 @@
 import logging
+from io import BytesIO
+from zipfile import ZipFile, ZIP_DEFLATED
+from typing import AsyncIterator, Optional
 import base64
+
 from src.apps.documents.client import DocumentClient
 from src.apps.documents.constants import APIEndpoints
-from src.apps.documents.decorators import handle_http_errors
 from src.apps.documents.dto import (
+    SearchRequest,
     SearchResponse,
-    GetResponse,
-    PreviewResponse,
+    DownloadRequest,
+    PreviewRequest,
 )
 
 logger = logging.getLogger(__name__)
 
 
 class DocumentAPIService:
-    """Business logic layer for SAP document operations."""
+    """Single service handling all document operations."""
 
-    def __init__(self, client: DocumentClient) -> None:
+    def __init__(self, client: DocumentClient):
         self.document_client = client
-        logger.info("DocumentAPIService initialized")
+        logger.info("DocumentService initialized")
+
+
+class DownloadDocumentAPIService(DocumentAPIService):
+    pass
 
 
 class SearchDocumentAPIService(DocumentAPIService):
@@ -25,26 +33,16 @@ class SearchDocumentAPIService(DocumentAPIService):
         logger.info("Searching for %d part numbers", len(part_numbers))
 
         url = f"{self.document_client.base_url}{APIEndpoints.SEARCH}"
-
         params = {"part_numbers": "".join(map(str, part_numbers))}
 
-        response = await self.document_client.http_client.get(url, params=params)
-
-        response.raise_for_status()
+        response = await self.document_client.search(url, params)
 
         search_response = SearchResponse(**response.json())
-
         return search_response
 
 
-class DownloadDocumentAPIService(DocumentAPIService):
-    async def download(self, document_ids: list[str]) -> zip | None:
-        # todo: send get requests to CPI SAP and with results construct zip
-        pass
-
-
 class PreviewDocumentAPIService(DocumentAPIService):
-    async def preview(self, document_id: str) -> str | None:
+    async def preview(self, document_id: str) -> Optional[str]:
         response = await self.document_client.get_document_content(document_id=document_id)
 
         if response is None:
