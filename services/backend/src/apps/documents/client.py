@@ -2,7 +2,7 @@ import httpx
 import logging
 from typing import Optional
 
-from src.apps.documents.constants import APIEndpoints
+from src.apps.documents.constants import APIEndpoints, DEFAULT_TIMEOUT_SECONDS
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +13,7 @@ class DocumentClient:
             base_url: str,
             username: str,
             password: str,
-            timeout: int = 30
+            timeout: int = DEFAULT_TIMEOUT_SECONDS
     ):
         self.base_url = base_url.rstrip("/")
         self.http_client = httpx.AsyncClient(
@@ -29,7 +29,9 @@ class DocumentClient:
         )
 
     async def get_document_content(self, document_id: str) -> Optional[bytes]:
-        """Fetch document content by ID."""
+        """
+        Fetch document content by ID.
+        """
         url = f"{self.base_url}{APIEndpoints.GET}"
         params = {"id": document_id}
 
@@ -43,8 +45,10 @@ class DocumentClient:
                 return None
             raise
 
-    async def get_document_metadata(self, params: dict) -> httpx.Response:
-        """Execute search request for metadata(not content)."""
+    async def get_documents_metadata(self, params: dict) -> httpx.Response:
+        """
+        Fetch documents metadata by partition number.
+        """
         url = f"{self.base_url}{APIEndpoints.SEARCH}"
         response = await self.http_client.get(url, params=params)
         response.raise_for_status()

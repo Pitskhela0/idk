@@ -1,7 +1,13 @@
 from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
 
-from src.apps.documents.constants import MIN_PART_NUMBERS, MAX_PART_NUMBERS
+from src.apps.documents.constants import (
+    MIN_PART_NUMBERS,
+    MAX_PART_NUMBERS,
+    MIN_DOCUMENT_IDS,
+    MAX_DOCUMENT_IDS,
+    MIN_DOCUMENT_ID_LENGTH
+)
 
 
 class Document(BaseModel):
@@ -31,7 +37,7 @@ class NotFoundInfo(BaseModel):
 
 
 class SearchResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True, extra="ignore")
+    model_config = ConfigDict(from_attributes=True)
 
     data: list[Document] = Field(default_factory=list)
     not_found: NotFoundInfo = Field(default_factory=NotFoundInfo)
@@ -40,7 +46,11 @@ class SearchResponse(BaseModel):
 class DownloadRequest(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    document_ids: list[str] = Field(..., min_length=1, max_length=10)
+    document_ids: list[str] = Field(
+        ...,
+        min_length=MIN_DOCUMENT_IDS,
+        max_length=MAX_DOCUMENT_IDS
+    )
 
 
 class DownloadResponse(BaseModel):
@@ -54,7 +64,7 @@ class DownloadResponse(BaseModel):
 class PreviewRequest(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    document_id: str = Field(..., min_length=1)
+    document_id: str = Field(..., min_length=MIN_DOCUMENT_ID_LENGTH)
 
 
 class PreviewResponse(BaseModel):
