@@ -42,6 +42,12 @@ class AppConfig(BaseSettings):
     graph_client_secret: str
     graph_sender_mailbox: str = "drawinglocator@tennantco.com"
 
+    # document API config
+    document_base_url: str
+    document_username: str
+    document_password: str
+    document_timeout_seconds: int = 30
+
     # Application Limits
     max_email_size_mb: int = 50
 
@@ -52,6 +58,7 @@ class AppConfig(BaseSettings):
                 value = value.with_password("***")
             elif prop in (
                 "graph_client_secret",  # add other secrets if needed
+                "document_password",
             ):
                 value = "***"
 
