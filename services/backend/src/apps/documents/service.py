@@ -1,51 +1,65 @@
 import logging
-from io import BytesIO
-from zipfile import ZipFile, ZIP_DEFLATED
-from typing import AsyncIterator, Optional
+from typing import Optional
 import base64
+import asyncio
 
 from src.apps.documents.client import DocumentClient
-from src.apps.documents.constants import APIEndpoints
-from src.apps.documents.dto import (
-    SearchRequest,
-    SearchResponse,
-    DownloadRequest,
-    PreviewRequest,
-)
+from src.apps.documents.dto import SearchResponse, DownloadResponse
+from src.apps.documents.utils import ZipGenerator
 
 logger = logging.getLogger(__name__)
 
 
 class DocumentAPIService:
-    """Single service handling all document operations."""
-
     def __init__(self, client: DocumentClient):
         self.document_client = client
         logger.info("DocumentService initialized")
 
 
-class DownloadDocumentAPIService(DocumentAPIService):
-    pass
-
-
 class SearchDocumentAPIService(DocumentAPIService):
     async def search(self, part_numbers: list[int]) -> SearchResponse:
         logger.info("Searching for %d part numbers", len(part_numbers))
-
-        url = f"{self.document_client.base_url}{APIEndpoints.SEARCH}"
         params = {"part_numbers": "".join(map(str, part_numbers))}
+        response = await self.document_client.get_document_metadata(params)
+        return SearchResponse(**response.json())
 
-        response = await self.document_client.search(url, params)
 
-        search_response = SearchResponse(**response.json())
-        return search_response
+class DownloadDocumentAPIService(DocumentAPIService):
+    async def download(self, document_ids: list[str]) -> DownloadResponse:
+        logger.info("Downloading %d documents", len(document_ids))
+
+        tasks = [self.document_client.get_document_content(doc_id) for doc_id in document_ids]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        found_files = {}
+        not_found_ids = []
+
+        for doc_id, result in zip(document_ids, results):
+            if isinstance(result, Exception) or result is None:
+                not_found_ids.append(doc_id)
+            else:
+                found_files[doc_id] = result
+
+        if len(found_files) == 1:
+            doc_id = next(iter(found_files.keys()))
+            content = found_files[doc_id]
+            return DownloadResponse(
+                file_name=f"document_{doc_id}.pdf",
+                content=base64.b64encode(content).decode('utf-8'),
+                not_found_ids=not_found_ids
+            )
+
+        zip_content = ZipGenerator.create_zip(found_files)
+        return DownloadResponse(
+            file_name="documents.zip",
+            content=base64.b64encode(zip_content).decode('utf-8'),
+            not_found_ids=not_found_ids
+        )
 
 
 class PreviewDocumentAPIService(DocumentAPIService):
     async def preview(self, document_id: str) -> Optional[str]:
-        response = await self.document_client.get_document_content(document_id=document_id)
-
+        response = await self.document_client.get_document_content(document_id)
         if response is None:
             return None
-
         return base64.b64encode(response).decode('utf-8')

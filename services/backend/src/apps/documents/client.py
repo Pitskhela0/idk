@@ -43,8 +43,9 @@ class DocumentClient:
                 return None
             raise
 
-    async def search(self, url: str, params: dict) -> httpx.Response:
-        """Execute search request."""
+    async def get_document_metadata(self, params: dict) -> httpx.Response:
+        """Execute search request for metadata(not content)."""
+        url = f"{self.base_url}{APIEndpoints.SEARCH}"
         response = await self.http_client.get(url, params=params)
         response.raise_for_status()
         return response
