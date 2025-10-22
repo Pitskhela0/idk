@@ -2,9 +2,6 @@ import logging
 
 from fastapi import FastAPI
 from starlette.types import ASGIApp
-from contextlib import asynccontextmanager
-
-from src.apps.documents.client import DocumentClient
 
 from src.api.rest.v0.routes import api_v0_router
 from src.api.rest.v1.routes import api_v1_router
@@ -15,26 +12,6 @@ from src.infra.application.setup.tracing import setup_tracing_middleware
 
 
 logger = logging.getLogger(__name__)
-
-
-def create_lifespan(config: AppConfig):
-    @asynccontextmanager
-    async def lifespan(app: FastAPI):
-        logger.info("initializing DocumentClient")
-        document_client = DocumentClient(
-            base_url=config.document_base_url,
-            username=config.document_username,
-            password=config.document_password,
-            timeout=config.document_timeout_seconds
-        )
-
-        app.state.document_client = document_client
-
-        yield
-
-        logger.info("Shutting down DocumentClient")
-        await document_client.close()
-    return lifespan
 
 
 def app_factory(config: AppConfig) -> ASGIApp:
@@ -63,7 +40,7 @@ def app_factory(config: AppConfig) -> ASGIApp:
             config.openapi_url,
         )
 
-    app = FastAPI(lifespan=create_lifespan(config), **app_props)  # type: ignore[arg-type]
+    app = FastAPI(**app_props)  # type: ignore[arg-type]
 
     if config.debug:
         logger.info("app started with config")
