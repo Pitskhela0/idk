@@ -6,7 +6,7 @@ authors = ["Gakha Pitskhelauri <gakha.pitskhelauri@leverx.com>"]
 package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.11,<3.12"
 fastapi = "^0.101.0"
 uvicorn = {extras = ["standart"], version = "^0.27.0.post1"}
 pydantic = {extras = ["email"], version = "^2.6.1"}
