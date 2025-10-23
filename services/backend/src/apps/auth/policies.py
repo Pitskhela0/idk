@@ -1,22 +1,15 @@
-from src.apps.auth.enums import Role, Scope
+from src.apps.auth.enums import DrawingLocatorGroup
 
-# Each endpoint or feature can define allowed roles and scopes
+# Groups that are permitted to certain actions
+
 SEARCH_POLICY = {
-    "roles": [Role.VIEWER, Role.EDITOR, Role.ADMIN],
-    "scopes": [Scope.DOCUMENT_PREVIEW],
+    "groups": [DrawingLocatorGroup.VIEWER, DrawingLocatorGroup.EDITOR]
 }
 
 PREVIEW_POLICY = {
-    "roles": [Role.VIEWER, Role.EDITOR, Role.ADMIN],
-    "scopes": [Scope.DOCUMENT_PREVIEW],
+    "groups": [DrawingLocatorGroup.VIEWER, DrawingLocatorGroup.EDITOR]
 }
 
 DOWNLOAD_POLICY = {
-    "roles": [Role.EDITOR, Role.ADMIN],
-    "scopes": [Scope.DOCUMENT_DOWNLOAD],
-}
-
-MANAGE_POLICY = {
-    "roles": [Role.ADMIN],
-    "scopes": [Scope.DOCUMENT_MANAGE],
+    "groups": [DrawingLocatorGroup.EDITOR]
 }
