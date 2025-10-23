@@ -1,5 +1,5 @@
 from datetime import datetime
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field
 
 from src.apps.documents.constants import (
     MIN_PART_NUMBERS,
@@ -46,7 +46,6 @@ class DownloadRequest(BaseModel):
 class DownloadResponse(BaseModel):
     file_name: str
     content: str
-    not_found_ids: list[str] = Field(default_factory=list)
 
 
 class PreviewRequest(BaseModel):
@@ -54,5 +53,4 @@ class PreviewRequest(BaseModel):
 
 
 class PreviewResponse(BaseModel):
-    file_name: str
     content_base64: str

@@ -9,14 +9,10 @@ MIN_DOCUMENT_ID_LENGTH = 1
 
 
 class APIEndpoints:
-    SEARCH = "/api/v1/documents/search/"
-    GET = "/api/v1/documents/get/"
+    DOCUMENTS_METADATA = "api/v1/documents"
+    SINGLE_FULL_DOCUMENT = "api/v1/documents/{document_id}"
 
 
-class DownloadDocumentName:
-    ZIP_NAME = "documents.zip"
-    SINGLE_DOCUMENT_NAME = "document_{}.pdf"
+ZIP_NAME = "documents.zip"
+DOCUMENT_NAME = "document_{}.pdf"
 
-
-class PreviewDocumentName:
-    DOCUMENT_NAME = "preview_{}.pdf"

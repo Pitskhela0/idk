@@ -3,11 +3,12 @@ from typing import AsyncGenerator
 from fastapi import Depends
 
 from src.apps.documents.client import DocumentClient
-from src.apps.documents.service import (
-    SearchDocumentAPIService,
-    DownloadDocumentAPIService,
-    PreviewDocumentAPIService
-)
+from src.apps.documents.services.download_service import DownloadDocumentAPIService
+
+from src.apps.documents.services.search_service import SearchDocumentAPIService
+
+from src.apps.documents.services.preview_service import PreviewDocumentAPIService
+
 from src.config import get_config, AppConfig
 
 

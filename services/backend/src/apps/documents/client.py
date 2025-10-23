@@ -3,6 +3,8 @@ import logging
 
 from src.apps.documents.constants import DEFAULT_TIMEOUT_SECONDS
 from src.apps.documents.decorators import handle_http_errors
+from src.apps.documents.constants import APIEndpoints
+
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +17,8 @@ class DocumentClient:
             password: str,
             timeout: int = DEFAULT_TIMEOUT_SECONDS
     ):
-        self.base_url = base_url.rstrip("/")
+        self.base_url = base_url if base_url.endswith("/") else base_url + "/"
+
         self.http_client = httpx.AsyncClient(
             auth=(username, password),
             timeout=httpx.Timeout(timeout),
@@ -29,8 +32,19 @@ class DocumentClient:
         )
 
     @handle_http_errors("get")
-    async def get(self, url: str, params: dict):
+    async def get(self, url: str, params: dict | None = None):
         full_url = f"{self.base_url}{url}"
-        response = await self.http_client.get(full_url, params=params)
+
+        # todo: transform request form into odata protocol
+
+        response = await self.http_client.get(full_url, params=params or {})
         response.raise_for_status()
-        return response
+        return response.json()
+
+    async def get_documents_list(self, params: dict):
+        return await self.get(APIEndpoints.DOCUMENTS_METADATA, params)
+
+    async def get_document_content(self, document_id: str):
+
+        url = APIEndpoints.SINGLE_FULL_DOCUMENT.format(document_id=document_id)
+        return await self.get(url)
