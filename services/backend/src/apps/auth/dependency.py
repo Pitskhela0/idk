@@ -1,5 +1,6 @@
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 from src.apps.auth.jwt import decode_jwt
+from src.infra.application.exception import ForbiddenError
 from typing import Any
 
 
@@ -8,7 +9,7 @@ def require_groups(*allowed_groups: str):
         user_groups = set(claims.get("groups", []))
 
         if not user_groups.intersection(allowed_groups):
-            raise HTTPException(status_code=403, detail="User does not belong to any of the allowed groups")
+            raise ForbiddenError(detail="User does not belong to any of the allowed groups")
         return claims
 
     return dependency
