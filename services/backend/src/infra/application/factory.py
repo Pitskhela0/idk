@@ -1,17 +1,39 @@
 import logging
-
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
+from fastapi.responses import JSONResponse
 from starlette.types import ASGIApp
-
+from http import HTTPStatus
+from typing import Callable, Awaitable
 from src.api.rest.v0.routes import api_v0_router
 from src.api.rest.v1.routes import api_v1_router
 from src.config import AppConfig
+from src.infra.application.exception import AppError
 from src.infra.application.setup.cors import setup_cors_middleware
 from src.infra.application.setup.logging import setup_logging
 from src.infra.application.setup.tracing import setup_tracing_middleware
 
-
 logger = logging.getLogger(__name__)
+
+
+def create_app_error_handler(app: FastAPI) -> Callable[[Request, Exception], Awaitable[Response]]:
+    async def app_error_handler(request: Request, exc: AppError) -> Response:
+        logger.warning("Handled AppError: %s", exc.detail)
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"errors": [{"message": exc.detail}]},
+        )
+    return app_error_handler
+
+
+def create_internal_exception_handler(app: FastAPI):
+    async def internal_exception_handler(request: Request, exc: Exception):
+        logger.exception("Unhandled internal exception: %s", exc)
+        return JSONResponse(
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+            content={"errors": [{"message": "Internal server error"}]}
+        )
+
+    return internal_exception_handler
 
 
 def app_factory(config: AppConfig) -> ASGIApp:
@@ -30,9 +52,7 @@ def app_factory(config: AppConfig) -> ASGIApp:
         app_props["docs_url"] = None
         app_props["redoc_url"] = None
         app_props["openapi_url"] = None
-        logger.info(
-            "swagger documentation was hidden due to security reasons",
-        )
+        logger.info("swagger documentation hidden for security")
     else:
         logger.info(
             "swagger documentation available at %s and %s",
@@ -48,8 +68,6 @@ def app_factory(config: AppConfig) -> ASGIApp:
         for prop, value in dict(masked_config).items():
             logger.info(" config [%s] has value [%s]", prop, value)
 
-    logger.info("setup middlewares")
-
     setup_cors_middleware(app, config)
     setup_tracing_middleware(app, config)
 
@@ -58,10 +76,9 @@ def app_factory(config: AppConfig) -> ASGIApp:
         prefix="/api/0",
     )
 
-    app.include_router(
-        api_v1_router,
-        prefix="/api/v1"
-    )
+    # global exception handlers
+    app.add_exception_handler(AppError, create_app_error_handler(app))
+    app.add_exception_handler(Exception, create_internal_exception_handler(app))
 
     logger.info("app is ready")
 

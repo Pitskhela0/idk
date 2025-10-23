@@ -9,7 +9,14 @@ MIN_DOCUMENT_ID_LENGTH = 1
 
 
 class APIEndpoints:
-    """SAP CPI API paths."""
-
     SEARCH = "/api/v1/documents/search/"
     GET = "/api/v1/documents/get/"
+
+
+class DownloadDocumentName:
+    ZIP_NAME = "documents.zip"
+    SINGLE_DOCUMENT_NAME = "document_{}.pdf"
+
+
+class PreviewDocumentName:
+    DOCUMENT_NAME = "preview_{}.pdf"

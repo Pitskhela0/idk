@@ -11,8 +11,6 @@ from src.apps.documents.constants import (
 
 
 class Document(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
     id: str
     part_number: int
     rev: str
@@ -21,8 +19,6 @@ class Document(BaseModel):
 
 
 class SearchRequest(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
     part_numbers: list[int] = Field(
         ...,
         min_length=MIN_PART_NUMBERS,
@@ -31,21 +27,15 @@ class SearchRequest(BaseModel):
 
 
 class NotFoundInfo(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
     part_numbers: list[int] = Field(default_factory=list)
 
 
 class SearchResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
     data: list[Document] = Field(default_factory=list)
     not_found: NotFoundInfo = Field(default_factory=NotFoundInfo)
 
 
 class DownloadRequest(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
     document_ids: list[str] = Field(
         ...,
         min_length=MIN_DOCUMENT_IDS,
@@ -54,20 +44,15 @@ class DownloadRequest(BaseModel):
 
 
 class DownloadResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
     file_name: str
     content: str
     not_found_ids: list[str] = Field(default_factory=list)
 
 
 class PreviewRequest(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
     document_id: str = Field(..., min_length=MIN_DOCUMENT_ID_LENGTH)
 
 
 class PreviewResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+    file_name: str
     content_base64: str

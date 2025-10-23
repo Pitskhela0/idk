@@ -1,8 +1,8 @@
 import httpx
 import logging
-from typing import Optional
 
-from src.apps.documents.constants import APIEndpoints, DEFAULT_TIMEOUT_SECONDS
+from src.apps.documents.constants import DEFAULT_TIMEOUT_SECONDS
+from src.apps.documents.decorators import handle_http_errors
 
 logger = logging.getLogger(__name__)
 
@@ -28,28 +28,9 @@ class DocumentClient:
             timeout
         )
 
-    async def get_document_content(self, document_id: str) -> Optional[bytes]:
-        """
-        Fetch document content by ID.
-        """
-        url = f"{self.base_url}{APIEndpoints.GET}"
-        params = {"id": document_id}
-
-        try:
-            response = await self.http_client.get(url, params=params)
-            response.raise_for_status()
-            return response.content
-        except httpx.HTTPStatusError as e:
-            if e.response.status_code == 404:
-                logger.warning("Document not found: %s", document_id)
-                return None
-            raise
-
-    async def get_documents_metadata(self, params: dict) -> httpx.Response:
-        """
-        Fetch documents metadata by partition number.
-        """
-        url = f"{self.base_url}{APIEndpoints.SEARCH}"
-        response = await self.http_client.get(url, params=params)
+    @handle_http_errors("get")
+    async def get(self, url: str, params: dict):
+        full_url = f"{self.base_url}{url}"
+        response = await self.http_client.get(full_url, params=params)
         response.raise_for_status()
         return response
