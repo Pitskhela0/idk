@@ -4,7 +4,7 @@ from io import BytesIO
 
 from src.apps.documents.service import DocumentService
 from src.apps.documents.dto import DownloadRequest
-from src.apps.auth.dependency import require_roles, require_scopes
+from src.apps.auth.dependency import require_groups
 from src.apps.auth.policies import DOWNLOAD_POLICY
 
 download_router = APIRouter()
@@ -12,8 +12,7 @@ download_router = APIRouter()
 @download_router.post("/download")
 async def download_documents(
     request: DownloadRequest,
-    role_claims: dict = Depends(require_roles(*DOWNLOAD_POLICY['roles'])),
-    scope_claims: dict = Depends(require_scopes(*DOWNLOAD_POLICY['scopes'])),
+    group_claims: dict = require_groups(*DOWNLOAD_POLICY['groups'])
     service: DocumentService = Depends(DocumentService)
 ):
     result = await service.download(request)

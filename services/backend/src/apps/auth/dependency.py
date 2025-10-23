@@ -3,23 +3,12 @@ from src.apps.auth.jwt import decode_jwt
 from typing import Any
 
 
-def require_roles(*allowed_roles: str):
+def require_groups(*allowed_groups: str):
     async def dependency(claims: dict[str, Any] = Depends(decode_jwt)):
-        user_roles = set(claims.get("roles", []))
+        user_groups = set(claims.get("groups", []))
 
-        if not user_roles.intersection(allowed_roles):
-            raise HTTPException(status_code=403, detail="Insufficient role")
-        return claims
-
-    return dependency
-
-
-def require_scopes(*allowed_scopes: str):
-    async def dependency(claims: dict[str, Any] = Depends(decode_jwt)):
-        user_scopes = set(claims.get("scope", "").split())
-
-        if not user_scopes.intersection(allowed_scopes):
-            raise HTTPException(status_code=403, detail="Insufficient scope")
+        if not user_groups.intersection(allowed_groups):
+            raise HTTPException(status_code=403, detail="User does not belong to any of the allowed groups")
         return claims
 
     return dependency
