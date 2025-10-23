@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from io import BytesIO
 
-from src.apps.documents.service import DocumentService
+from src.apps.documents.service import DownloadDocumentAPIService
+from src.apps.documents.dependency import get_download_service
 from src.apps.documents.dto import DownloadRequest
 from src.apps.auth.dependency import require_groups
 from src.apps.auth.policies import DOWNLOAD_POLICY
@@ -12,10 +13,10 @@ download_router = APIRouter()
 @download_router.post("/download")
 async def download_documents(
     request: DownloadRequest,
-    group_claims: dict = require_groups(*DOWNLOAD_POLICY['groups'])
-    service: DocumentService = Depends(DocumentService)
+    group_claims: dict = require_groups(*DOWNLOAD_POLICY['groups']),
+    service: DownloadDocumentAPIService = Depends(get_download_service)
 ):
-    result = await service.download(request)
+    result = await service.download(request.document_ids)
 
     return StreamingResponse(
         BytesIO(result.content),
