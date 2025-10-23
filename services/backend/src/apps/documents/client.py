@@ -41,10 +41,14 @@ class DocumentClient:
         response.raise_for_status()
         return response.json()
 
-    async def get_documents_list(self, params: dict):
-        return await self.get(APIEndpoints.DOCUMENTS_METADATA, params)
+    async def get_documents_list(self, part_numbers: list[int]):
+        params = {"part_numbers": ",".join(map(str, part_numbers))}
+        json_response = await self.get(APIEndpoints.DOCUMENTS_METADATA, params)
+
+        return json_response
 
     async def get_document_content(self, document_id: str):
-
         url = APIEndpoints.SINGLE_FULL_DOCUMENT.format(document_id=document_id)
-        return await self.get(url)
+        json_response = await self.get(url)
+
+        return json_response.get("content")

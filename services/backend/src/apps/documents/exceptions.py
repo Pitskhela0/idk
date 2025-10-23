@@ -16,3 +16,10 @@ class DocumentTimeoutError(DocumentError):
 class DocumentAuthenticationError(DocumentError):
     default_detail = "Authentication failed to document service"
 
+
+class DownloadDocumentNotFound(DocumentError):
+    default_detail = "No documents found for the provided IDs"
+
+
+class PreviewDocumentNotFound(DocumentError):
+    default_detail = "Document not found for preview"

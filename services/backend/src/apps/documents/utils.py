@@ -1,6 +1,7 @@
 from io import BytesIO
 import zipfile
 import base64
+from typing import Optional
 
 
 def encode_base64(content: bytes) -> str:

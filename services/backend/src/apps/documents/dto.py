@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 from pydantic import BaseModel, Field
 
 from src.apps.documents.constants import (
@@ -46,6 +46,7 @@ class DownloadRequest(BaseModel):
 class DownloadResponse(BaseModel):
     file_name: str
     content: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class PreviewRequest(BaseModel):

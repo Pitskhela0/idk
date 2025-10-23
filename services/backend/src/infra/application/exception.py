@@ -21,15 +21,19 @@ class AppError(HTTPException):
 
 class BadRequestError(AppError):
     default_detail = "Bad request"
+    status_code = status.HTTP_400_BAD_REQUEST
 
 
 class UnauthorizedError(AppError):
     default_detail = "Unauthorized access"
+    status_code = status.HTTP_401_UNAUTHORIZED
 
 
 class ForbiddenError(AppError):
     default_detail = "Forbidden action"
+    status_code = status.HTTP_403_FORBIDDEN
 
 
 class NotFoundError(AppError):
     default_detail = "Resource not found"
+    status_code = status.HTTP_404_NOT_FOUND
