@@ -19,28 +19,13 @@ class EmailConfig(BaseSettings):
     sender_mailbox: str = "drawinglocator@tennantco.com"
 
 
-# Microsoft Azure AD Configuration
-class AzureConfig(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="AZURE_")
-
-    client_id: str
-    tenant_id: str
-
-    @property
-    def issuer(self) -> str:
-        return f"https://login.microsoftonline.com/{self.tenant_id}/v2.0"
-
-    @property
-    def jwks_url(self) -> str:
-        return f"{self.issuer}/discovery/v2.0/keys"
-
-
 # Microsoft Graph API Configuration
 class GraphConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="GRAPH_")
     
     client_id: str
     client_secret: str
+    azure_tenant_id: str
 
     _email_config: EmailConfig | None = None
 
@@ -50,6 +35,14 @@ class GraphConfig(BaseSettings):
             self._email_config = EmailConfig() # type: ignore[arg-type]
 
         return self._email_config.sender_mailbox
+
+    @property
+    def azure_issuer(self) -> str:
+        return f"https://login.microsoftonline.com/{self.azure_tenant_id}/v2.0"
+
+    @property
+    def azure_jwks_url(self) -> str:
+        return f"{self.azure_issuer}/discovery/v2.0/keys"
 
 
 class SAPCPIConfig(BaseSettings):
@@ -65,7 +58,6 @@ class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="")
 
     email: EmailConfig = Field(default_factory=EmailConfig) # type: ignore[arg-type]
-    azure: AzureConfig = Field(default_factory=AzureConfig) # type: ignore[arg-type]
     graph: GraphConfig = Field(default_factory=GraphConfig) # type: ignore[arg-type]
     sap_cpi: SAPCPIConfig = Field(default_factory=SAPCPIConfig) # type: ignore[arg-type]
 
