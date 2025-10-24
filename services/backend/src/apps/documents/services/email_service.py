@@ -65,11 +65,8 @@ class EmailDocumentAPIService(DocumentAPIService):
 
     async def send_email(self, email: str, file_name: str, content: bytes) -> None:
         """Send email using Microsoft Graph SDK."""
-        # Load application configuration (tenant, client credentials, sender info)
         config = get_config()
 
-        # Authenticate with Azure AD using client credentials flow
-        #     - The SDK automatically handles token retrieval and caching
         # todo: add handlers
         credential = ClientSecretCredential(
             tenant_id=config.graph.azure_tenant_id,
@@ -77,15 +74,10 @@ class EmailDocumentAPIService(DocumentAPIService):
             client_secret=config.graph.client_secret
         )
 
-        # Initialize Microsoft Graph client authorized with the obtained credential
         graph_client = GraphServiceClient(credential)
 
-        # Determine attachment content type (PDF or ZIP)
         content_type = "application/zip" if file_name.endswith(".zip") else "application/pdf"
 
-        # Construct the email payload using strongly-typed Graph models
-        #     - Builds subject, body, recipient list, and file attachment
-        #     - SDK auto-encodes the file content in base64 internally
         request_body = SendMailPostRequestBody(
             message=Message(
                 subject="Documents from Drawing Locator",
@@ -109,7 +101,7 @@ class EmailDocumentAPIService(DocumentAPIService):
                     ),
                 ],
             ),
-            save_to_sent_items=False,  # prevents storing the sent mail in Sent Items
+            save_to_sent_items=False,
         )
 
         await graph_client.users.by_user_id(config.graph.sender_mailbox).send_mail.post(request_body)
