@@ -17,7 +17,7 @@ class DocumentAuthenticationError(DocumentError):
     default_detail = "Authentication failed to document service"
 
 
-class DownloadDocumentNotFound(DocumentError):
+class DocumentNotFound(DocumentError):
     default_detail = "No documents found for the provided IDs"
 
 
