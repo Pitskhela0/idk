@@ -18,7 +18,7 @@ async def get_jwks() -> list[dict[str, Any]]:
         return _cached_keys
 
     async with httpx.AsyncClient() as client:
-        resp = await client.get(get_config().azure_jwks_url)
+        resp = await client.get(get_config().azure.jwks_url)
         resp.raise_for_status()
 
         keys = resp.json().get('keys')

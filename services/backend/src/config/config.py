@@ -1,7 +1,8 @@
 import logging
-from typing import Literal
+from typing import Literal, Any
 
 from pydantic import AnyHttpUrl, Field
+from pydantic_core import Url
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from yarl import URL
 
@@ -12,8 +13,53 @@ _AnyLogLevel = Literal["debug", "info", "warning", "error", "critical"]
 logger = logging.getLogger(__name__)
 
 
+class EmailConfig(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="EMAIL_")
+
+    sender_mailbox: str = "drawinglocator@tennantco.com"
+
+
+# Microsoft Graph API Configuration
+class GraphConfig(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="GRAPH_")
+    
+    client_id: str
+    client_secret: str
+    azure_tenant_id: str
+
+    _email_config: EmailConfig | None = None
+
+    @property
+    def sender_mailbox(self) -> str:
+        if self._email_config is None:
+            self._email_config = EmailConfig() # type: ignore[arg-type]
+
+        return self._email_config.sender_mailbox
+
+    @property
+    def azure_issuer(self) -> str:
+        return f"https://login.microsoftonline.com/{self.azure_tenant_id}/v2.0"
+
+    @property
+    def azure_jwks_url(self) -> str:
+        return f"{self.azure_issuer}/discovery/v2.0/keys"
+
+
+class SAPCPIConfig(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="SAP_CPI_")
+
+    document_base_url: AnyHttpUrl
+    token_obtain_url: AnyHttpUrl
+    client_id: str
+    client_secret: str
+
+
 class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="")
+
+    email: EmailConfig = Field(default_factory=EmailConfig) # type: ignore[arg-type]
+    graph: GraphConfig = Field(default_factory=GraphConfig) # type: ignore[arg-type]
+    sap_cpi: SAPCPIConfig = Field(default_factory=SAPCPIConfig) # type: ignore[arg-type]
 
     app_name: str
     app_host: AnyHttpUrl
@@ -37,31 +83,30 @@ class AppConfig(BaseSettings):
     cors_methods: list[str]
     cors_headers: list[str]
 
-    # Microsoft Graph API Configuration
-    graph_client_id: str
-    graph_client_secret: str
-    graph_sender_mailbox: str = "drawinglocator@tennantco.com"
-
-    # document API config
-    document_base_url: str
-    document_username: str
-    document_password: str
-    document_timeout_seconds: int = 30
-
     # Application Limits
     max_email_size_mb: int = 50
 
-    def get_config_copy_with_masked_passwords(self):
-        new_config = {}
-        for prop, value in dict(self).items():
-            if isinstance(value, URL):
-                value = value.with_password("***")
-            elif prop in (
-                "graph_client_secret",  # add other secrets if needed
-                "document_password",
-            ):
-                value = "***"
+    def get_config_copy_with_masked_passwords(self) -> dict[str, Any]:
+        """
+        Returns a nested dictionary copy of this config:
+        - URL passwords are masked with '***'
+        - Nested BaseSettings are recursively converted to dictionaries
+        - Lists and dicts are also handled recursively
+        """
+        def mask_value(value: Any) -> Any:
+            if isinstance(value, Url):
+                if value.password is not None:
+                    return URL(str(value)).with_password("***")
 
-            new_config[prop] = value
+            elif isinstance(value, BaseSettings):
+                # recursively process nested BaseSettings
+                return {k: mask_value(v) for k, v in value.model_dump().items()}
 
-        return type(self)(**new_config)
+            elif isinstance(value, list):
+                return [mask_value(v) for v in value]
+
+            elif isinstance(value, dict):
+                return {k: mask_value(v) for k, v in value.items()}
+            return value
+
+        return {k: mask_value(v) for k, v in self.model_dump().items()}
