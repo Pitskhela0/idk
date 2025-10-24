@@ -7,7 +7,7 @@ from src.apps.documents.client import DocumentClient
 
 class ContentGenerator:
     @staticmethod
-    async def _fetch_single_document(client, document_id: str) -> tuple[str, Optional[bytes]]:
+    async def fetch_single_document(client, document_id: str) -> tuple[str, Optional[bytes]]:
         try:
             content = await client.get_document_content(document_id)
             return document_id, content
@@ -19,7 +19,7 @@ class ContentGenerator:
 
     @staticmethod
     async def content_response(client: DocumentClient, document_ids: list[str]):
-        tasks = [ContentGenerator._fetch_single_document(client, doc_id) for doc_id in document_ids]
+        tasks = [ContentGenerator.fetch_single_document(client, doc_id) for doc_id in document_ids]
         results = await asyncio.gather(*tasks)
 
         found_files: dict[str, bytes] = {}

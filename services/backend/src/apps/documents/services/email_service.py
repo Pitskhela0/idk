@@ -10,6 +10,7 @@ from msgraph.generated.models.email_address import EmailAddress
 from msgraph.generated.models.file_attachment import FileAttachment
 from azure.identity.aio import ClientSecretCredential
 
+from src.apps.documents.constants import EmailServiceConsts
 from src.apps.documents.dto import EmailResultDTO, FailedDocumentsDTO
 from src.apps.documents.services.base_service import DocumentAPIService
 from src.apps.documents.utils.content_generator import ContentGenerator
@@ -46,14 +47,14 @@ class EmailDocumentAPIService(DocumentAPIService):
 
         graph_client = GraphServiceClient(credential)
 
-        content_type = "application/zip" if file_name.endswith(".zip") else "application/pdf"
+        content_type = EmailServiceConsts.ZIP_CONTENT if file_name.endswith(".zip") else EmailServiceConsts.PDF_CONTENT
 
         request_body = SendMailPostRequestBody(
             message=Message(
-                subject="Documents from Drawing Locator",
+                subject=EmailServiceConsts.MESSAGE_SUBJECT,
                 body=ItemBody(
                     content_type=BodyType.Text,
-                    content=f"Please find attached: {file_name}",
+                    content=EmailServiceConsts.ATTACHMENT_CONTENT_DESC.format(file_name=file_name),
                 ),
                 to_recipients=[
                     Recipient(
@@ -64,7 +65,7 @@ class EmailDocumentAPIService(DocumentAPIService):
                 ],
                 attachments=[
                     FileAttachment(
-                        odata_type="#microsoft.graph.fileAttachment",
+                        odata_type=EmailServiceConsts.ODATA_FILE_TYPE,
                         name=file_name,
                         content_type=content_type,
                         content_bytes=content,

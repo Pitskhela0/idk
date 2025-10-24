@@ -16,3 +16,11 @@ class APIEndpoints:
 ZIP_NAME = "documents.zip"
 DOCUMENT_NAME = "document_{}.pdf"
 
+
+class EmailServiceConsts:
+    ZIP_CONTENT = "application/zip"
+    PDF_CONTENT = "application/pdf"
+    ODATA_FILE_TYPE = "#microsoft.graph.fileAttachment"
+    MESSAGE_SUBJECT = "Documents from Drawing Locator"  # should be specified by user
+    ATTACHMENT_CONTENT_DESC = "Please find attached: {file_name}"
+

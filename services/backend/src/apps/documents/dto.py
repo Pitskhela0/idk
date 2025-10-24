@@ -25,7 +25,6 @@ class DocumentContentDTO(BaseModel):
 class DownloadResultDTO(BaseModel):
     file_name: str
     content_bytes: bytes
-    is_single_file: bool
 
     class Config:
         arbitrary_types_allowed = True
