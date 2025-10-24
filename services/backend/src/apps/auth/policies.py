@@ -13,3 +13,7 @@ PREVIEW_POLICY = {
 DOWNLOAD_POLICY = {
     "groups": [DrawingLocatorGroup.EDITOR]
 }
+
+EMAIL_POLICY = {
+    "groups": [DrawingLocatorGroup.EDITOR]
+}

@@ -6,6 +6,7 @@ from src.apps.documents.client import DocumentClient
 from src.apps.documents.services.download_service import DownloadDocumentAPIService
 
 from src.apps.documents.services.search_service import SearchDocumentAPIService
+from src.apps.documents.services.email_service import EmailDocumentAPIService
 
 from src.apps.documents.services.preview_service import PreviewDocumentAPIService
 
@@ -44,3 +45,9 @@ def get_preview_service(
         client: DocumentClient = Depends(get_document_client)
 ) -> PreviewDocumentAPIService:
     return PreviewDocumentAPIService(client=client)
+
+
+def get_email_service(
+        client: DocumentClient = Depends(get_document_client)
+) -> EmailDocumentAPIService:
+    return EmailDocumentAPIService(client=client)

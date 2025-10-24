@@ -29,3 +29,11 @@ class DownloadResultDTO(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
+
+class FailedDocumentsDTO(BaseModel):
+    document_ids: list[str] = []
+
+
+class EmailResultDTO(BaseModel):
+    failed: FailedDocumentsDTO = FailedDocumentsDTO()
